@@ -14,8 +14,11 @@
 }
 
 @property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSString *method;
 @property (nonatomic, assign) IBOutlet id<HLRequestDelegate> delegate;
 @property (nonatomic, copy) HLRequestCompletionHandler completionHandler;
+
+@property (nonatomic, strong) NSURLConnection *connection;
 
 @end
 
@@ -50,15 +53,42 @@
     }
     
     //YOU MAY CHANGE THE POST DATA FORMATTING ACCORDING TO WHAT THE SERVER EXPECTS
-    if ([mutableRequest.HTTPMethod isEqualToString:@"POST"])
+    if (self.paramsDictionary &&
+        self.paramsDictionary.allKeys.count  > 0)
     {
-        NSError *error;
-        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:_paramsDictionary options:kNilOptions error:&error];
-        mutableRequest.HTTPBody = jsonData;
+        if ([mutableRequest.HTTPMethod isEqualToString:@"GET"])
+        {
+            mutableRequest.URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", mutableRequest.URL.absoluteString, [self getFormattedParamsFromDictionary:self.paramsDictionary]]];
+        }
+        if ([mutableRequest.HTTPMethod isEqualToString:@"POST"])
+        {
+            NSError *error;
+            NSData* jsonData = [NSJSONSerialization dataWithJSONObject:_paramsDictionary options:kNilOptions error:&error];
+            mutableRequest.HTTPBody = jsonData;
+        }
     }
     
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
-    [connection start];
+    self.connection = [[NSURLConnection alloc] initWithRequest:mutableRequest delegate:self];
+    [self.connection start];
+}
+
+- (void)cancel
+{
+    [self.connection cancel];
+    self.connection = nil;
+}
+
+#pragma mark - Helper
+
+- (NSString *)getFormattedParamsFromDictionary :(NSDictionary *)dictionary
+{
+    NSMutableString *parameterString = [NSMutableString new];
+    
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        [parameterString appendFormat:@"%@=%@&", key, obj];
+    }];
+    
+    return [parameterString substringToIndex:[parameterString length] - 1];
 }
 
 #pragma mark -
@@ -78,16 +108,22 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    if (!self.connection)
+        return;
+    
     if (!delegate)
         self.completionHandler(responseData, nil);
-    else
+    else if ([delegate respondsToSelector:@selector(requestDidReturnData:withInitialRequest:)])
         [delegate requestDidReturnData:responseData withInitialRequest:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    if (!self.connection)
+        return;
+    
     if (!delegate)
         self.completionHandler(nil, error);
-    else
+    else if ([delegate respondsToSelector:@selector(requestConnectionDidFailWithError:andInitialRequest:)])
         [delegate requestConnectionDidFailWithError:error andInitialRequest:self];
 }
 

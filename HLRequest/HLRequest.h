@@ -28,11 +28,11 @@ typedef void (^HLRequestCompletionHandler)(NSData *data, NSError *error);
     id <HLRequestDelegate> _delegate;
 }
 
-@property (nonatomic, strong) NSString *method;
 @property (nonatomic, strong) NSDictionary *paramsDictionary;
 @property (nonatomic, assign) HLRequestType requestType;
 
 - (void)executeRequestWithDelegate :(id<HLRequestDelegate>)requestDelegate;
 - (void)executeRequestWithCompletion :(HLRequestCompletionHandler)completionHandler;
+- (void)cancel;
 
 @end

@@ -40,6 +40,18 @@ Create a new instance of HLRequest and set `requestType` and `method` (GET, POST
 typedef void (^HLRequestCompletionHandler)(NSData *data, NSError *error);
 ```
 
+#### Cancel a request
+
+Simply use `cancel()` method on your HLRequest instance.
+
+```
+[myRequest cancel];
+```
+
+#### Parameters formatting
+
+Default is, GET parameters are appended to the request URL, and POST parameters are Json-encoded and enclosed in the request body.
+
 ### Configuration
 
 You can add HTTP header fields or change POST parameters formatting directly into `executeRequest()` method, in `HLRequest.m`.

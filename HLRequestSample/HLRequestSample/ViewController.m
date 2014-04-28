@@ -36,7 +36,6 @@
     HLRequest *colorsRequest = [HLRequest new];
     
     colorsRequest.requestType = HLRequestTypeSample;
-    colorsRequest.method = @"GET";
     
     [colorsRequest executeRequestWithCompletion:^(NSData *data, NSError *error) {
         if (error)
