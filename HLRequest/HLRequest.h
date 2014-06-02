@@ -1,9 +1,7 @@
 //
-//  EYRequestModel.h
-//  eiyt
+//  HLRequest.h
 //
 //  Created by Hervé HEURTAULT DE LAMMERVILLE on 22/02/14.
-//  Copyright (c) 2014 PLIC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
