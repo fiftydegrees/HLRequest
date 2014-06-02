@@ -18,6 +18,8 @@
 @property (nonatomic, assign) IBOutlet id<HLRequestDelegate> delegate;
 @property (nonatomic, copy) HLRequestCompletionHandler completionHandler;
 
+@property (nonatomic, strong) NSURL *kBaseURL;
+
 @property (nonatomic, strong) NSURLConnection *connection;
 
 @end
@@ -25,6 +27,19 @@
 @implementation HLRequest
 
 @synthesize delegate;
+
+- (id)init
+{
+    self = [super init];
+    if (self)
+    {
+        /**
+         *  Add your own base URL (you can switch between targets, from development to production environment)
+         */
+        self.kBaseURL = [NSURL URLWithString:@"http://getphotowizz.com/"];
+    }
+    return self;
+}
 
 - (void)executeRequestWithDelegate :(id<HLRequestDelegate>)requestDelegate
 {
@@ -42,17 +57,23 @@
 {
     NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] init];
     
-    //SET OPTIONAL HEADER FIELDS
-    //[mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    /**
+     *  Optionally set header fields
+     *  [mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+     */
     
-    //CHANGE BEHAVIOR ACCORDING TO YOUR WEBSERVICE
+    /**
+     *  Change this condition according to your own implementation
+     */
     if (self.requestType == HLRequestTypeSample)
     {
         mutableRequest.HTTPMethod = @"GET";
-        mutableRequest.URL = [NSURL URLWithString:@"http://getphotowizz.com/beta/misc/sample-json-1.json"];
+        mutableRequest.URL = [NSURL URLWithString:@"beta/misc/sample-json-1.json" relativeToURL:self.kBaseURL];
     }
     
-    //YOU MAY CHANGE THE POST DATA FORMATTING ACCORDING TO WHAT THE SERVER EXPECTS
+    /**
+     *  Change the way your parameters are embedded into the request
+     */
     if (self.paramsDictionary &&
         self.paramsDictionary.allKeys.count  > 0)
     {

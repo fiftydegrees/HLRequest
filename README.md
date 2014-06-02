@@ -56,6 +56,8 @@ Default is, GET parameters are appended to the request URL, and POST parameters 
 
 You can add HTTP header fields or change POST parameters formatting directly into `executeRequest()` method, in `HLRequest.m`.
 
+You may also change `kBaseURL` value in the `init()` method according to your own server.
+
 ## Credits
 
 HLRequest was developed by [Hervé Heurtault de Lammerville](http://www.hervedroit.com). If you have any feature suggestion or bug report, please help out by creating [an issue](https://github.com/fiftydegrees/HLRequest/issues/new) on GitHub. If you're using HLRequest in your project, please let me know.
